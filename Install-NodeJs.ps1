@@ -1,4 +1,4 @@
-
+Write-Host "Installing .net 4.6"
 ### Install .net 4.6
 $url = "https://download.microsoft.com/download/5/1/1/511BD803-609C-4B08-BD52-D6FC1835018F/NDP46-KB3006563-x86-x64-AllOS-ENU.exe";
 $output = "c:\NDP46-KB3006563-x86-x64-AllOS-ENU.exe"
@@ -7,19 +7,25 @@ Invoke-WebRequest -Uri $url -OutFile $output
 Start-Process -FilePath $output -ArgumentList "/q /norestart" -Wait -Verb RunAs
 
 ### Node Install
+Write-Host "Installing Node"
 
 $url = "https://nodejs.org/dist/v6.11.4/node-v6.11.4-x64.msi";
 $output = "c:\node-v6.11.4-x64.msi"
 
 Invoke-WebRequest -Uri $url -OutFile $output
-msiexec /qn /l* c:\node-log.txt /i $output
+Start-Process msiexec.exe -Wait -ArgumentList '/I $output /qn' -Verb RunAs
+
 
 ### Python Install (for robot framework stuff)
+Write-Host "Installing Python"
 $url = "https://www.python.org/ftp/python/2.7.14/python-2.7.14.msi";
 $output = "c:\python-2.7.14.msi"
 
 Invoke-WebRequest -Uri $url -OutFile $output
-msiexec ADDLOCAL="all" /i $output /qn
+#msiexec ADDLOCAL="all" /i $output /qn
+Start-Process msiexec.exe -Wait -ArgumentList '/I $output /qn' -Verb RunAs
+
+Write-Host "Updating Path"
 
 [Environment]::SetEnvironmentVariable("Path",$env:Path + "C:\Python27;C:\Python27\Scripts;C:\Python27\Lib","Process")
 
@@ -44,6 +50,7 @@ if (-not ("Win32.NativeMethods" -as [Type]))
 [Win32.Nativemethods]::SendMessageTimeout($HWND_BROADCAST, $WM_SETTINGCHANGE, [UIntPtr]::Zero, "Environment", 2, 5000, [ref] $result);
 
 ###### Python install extras for robot framework
+Write-Host "Installing Python Pip stuff"
 c:\python27\scripts\pip install decorator==4.0.10
 c:\python27\scripts\pip install docutils==0.12
 c:\python27\scripts\pip install pygments==2.0.2
@@ -56,5 +63,15 @@ c:\python27\scripts\pip install simplejson==3.8.2
 c:\python27\scripts\pip install robotframework-requests==0.4.7
 c:\python27\scripts\pip install requests
 
-### Open ports on Firewall
 
+### Install wxPython
+$url = "https://downloads.sourceforge.net/project/wxpython/wxPython/2.8.12.1/wxPython2.8-win32-unicode-2.8.12.1-py27.exe?r=https%3A%2F%2Fgithub.com%2F&ts=1507742352&use_mirror=ayera";
+$output = "c:\wxPython2.8-win32-unicode-2.8.12.1-py27.exe"
+
+Invoke-WebRequest -Uri $url -OutFile $output
+Start-Process $output -Wait -ArgumentList '/VERYSILENT' -Verb RunAs
+
+### Open ports on Firewall
+netsh advfirewall firewall add rule name="LWM2M-UDP" dir=in action=allow protocol=UDP localport=5683
+netsh advfirewall firewall add rule name="LWM2M-UDP-DTLS" dir=in action=allow protocol=UDP localport=5684
+netsh advfirewall firewall add rule name="LWM2M-TCP" dir=in action=allow protocol=UDP localport=5443
