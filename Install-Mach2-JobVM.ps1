@@ -13,7 +13,7 @@ $url = "https://nodejs.org/dist/v6.11.4/node-v6.11.4-x64.msi";
 $output = "c:\node-v6.11.4-x64.msi"
 
 Invoke-WebRequest -Uri $url -OutFile $output
-Start-Process msiexec.exe -Wait -ArgumentList '/I $output /qn' -Verb RunAs
+Start-Process -FilePath $output -Wait -ArgumentList '/qn'
 
 
 ### Python Install (for robot framework stuff)
@@ -22,8 +22,7 @@ $url = "https://www.python.org/ftp/python/2.7.14/python-2.7.14.msi";
 $output = "c:\python-2.7.14.msi"
 
 Invoke-WebRequest -Uri $url -OutFile $output
-#msiexec ADDLOCAL="all" /i $output /qn
-Start-Process msiexec.exe -Wait -ArgumentList '/I $output /qn' -Verb RunAs
+Start-Process -FilePath $output -Wait -ArgumentList 'ADDLOCAL="all" /qn'
 
 Write-Host "Updating Path"
 
@@ -62,16 +61,9 @@ c:\python27\scripts\pip install selenium==3.0.1
 c:\python27\scripts\pip install simplejson==3.8.2
 c:\python27\scripts\pip install robotframework-requests==0.4.7
 c:\python27\scripts\pip install requests
-
-
-### Install wxPython
-$url = "https://downloads.sourceforge.net/project/wxpython/wxPython/2.8.12.1/wxPython2.8-win32-unicode-2.8.12.1-py27.exe?r=https%3A%2F%2Fgithub.com%2F&ts=1507742352&use_mirror=ayera";
-$output = "c:\wxPython2.8-win32-unicode-2.8.12.1-py27.exe"
-
-Invoke-WebRequest -Uri $url -OutFile $output
-Start-Process $output -Wait -ArgumentList '/VERYSILENT' -Verb RunAs
+c:\python27\scripts\pip install -U wxPython
 
 ### Open ports on Firewall
 netsh advfirewall firewall add rule name="LWM2M-UDP" dir=in action=allow protocol=UDP localport=5683
 netsh advfirewall firewall add rule name="LWM2M-UDP-DTLS" dir=in action=allow protocol=UDP localport=5684
-netsh advfirewall firewall add rule name="LWM2M-TCP" dir=in action=allow protocol=UDP localport=5443
+netsh advfirewall firewall add rule name="LWM2M-TCP" dir=in action=allow protocol=TCP localport=5443
