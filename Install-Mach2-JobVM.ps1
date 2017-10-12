@@ -1,3 +1,25 @@
+############# Functions #####################
+function Add-Firewall-Rule{
+    Param(
+        [string] $DisplayName,
+        [string] $Protocol,
+        [string] $Port,
+        [string] $RuleAction = "allow",
+        [string] $RuleDir = "in"
+    )
+
+    $_fwRule = Get-NetFirewallRule -DisplayName $DisplayName
+
+    if ($_fwRule -eq $null){
+        Write-Host "Rule $DisplayName does not exist... creating"
+        netsh advfirewall firewall add rule name=$DisplayName dir=$RuleDir action=$RuleAction protocol=$Protocol localport=$Port
+    } else {
+        Write-Host "Rule $DisplayName exists"
+    }
+}
+
+############# END FUNCTIONS ###################
+
 Write-Host "Installing .net 4.6"
 ### Install .net 4.6
 $url = "https://download.microsoft.com/download/5/1/1/511BD803-609C-4B08-BD52-D6FC1835018F/NDP46-KB3006563-x86-x64-AllOS-ENU.exe";
@@ -64,6 +86,7 @@ c:\python27\scripts\pip install requests
 c:\python27\scripts\pip install -U wxPython
 
 ### Open ports on Firewall
-netsh advfirewall firewall add rule name="LWM2M-UDP" dir=in action=allow protocol=UDP localport=5683
-netsh advfirewall firewall add rule name="LWM2M-UDP-DTLS" dir=in action=allow protocol=UDP localport=5684
-netsh advfirewall firewall add rule name="LWM2M-TCP" dir=in action=allow protocol=TCP localport=5443
+Add-Firewall-Rule -DisplayName "LWM2M-UDP" -Protocol "UDP" -Port "5683"
+Add-Firewall-Rule -DisplayName "LWM2M-UDP-DTLS" -Protocol "UDP" -Port "5684"
+Add-Firewall-Rule -DisplayName "LWM2M-TCP" -Protocol "TCP" -Port "5443"
+
