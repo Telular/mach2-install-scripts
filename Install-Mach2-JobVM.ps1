@@ -18,6 +18,49 @@ function Add-Firewall-Rule{
     }
 }
 
+function Add-Directory-To-Path{
+    Param(
+        [string] $Directory
+    )
+
+    $currentPath=(Get-ItemProperty -Path 'Registry::HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Environment' -Name PATH).Path
+    if ($currentPath.ToLower().Split(";") -notcontains $Directory.ToLower()){
+        Write-Host "Adding $Directory To path"
+
+        if (![string]::IsNullOrEmpty($currentPath)){
+            $Directory = ";$Directory"
+        }
+
+        $newPath = $currentPath + $Directory
+
+        Set-ItemProperty -Path 'Registry::HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Environment' -Name PATH –Value $newPath
+        $env:Path = $newPath
+
+    } else {
+        Write-Host "$Directory Already exists in path... moving on"
+    }
+}
+
+function Reset-Path{
+
+    $HWND_BROADCAST = [IntPtr] 0xffff;
+    $WM_SETTINGCHANGE = 0x1a;
+    $result = [UIntPtr]::Zero
+
+    if (-not ("Win32.NativeMethods" -as [Type]))
+    {
+        # import sendmessagetimeout from win32
+        Add-Type -Namespace Win32 -Name NativeMethods -MemberDefinition @"
+        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        public static extern IntPtr SendMessageTimeout(
+        IntPtr hWnd, uint Msg, UIntPtr wParam, string lParam,
+        uint fuFlags, uint uTimeout, out UIntPtr lpdwResult);
+"@
+    }
+    # notify all windows of environment block change
+    [Win32.Nativemethods]::SendMessageTimeout($HWND_BROADCAST, $WM_SETTINGCHANGE, [UIntPtr]::Zero, "Environment", 2, 5000, [ref] $result);
+}
+
 ############# END FUNCTIONS ###################
 
 Write-Host "Installing .net 4.6"
@@ -47,31 +90,17 @@ Invoke-WebRequest -Uri $url -OutFile $output
 Start-Process -FilePath $output -Wait -ArgumentList 'ADDLOCAL="all" /qn'
 
 Write-Host "Updating Path"
+$dirsToAdd = "C:\Python27", "C:\Python27\Scripts", "C:\Python27\Lib"
 
-[Environment]::SetEnvironmentVariable("Path",$env:Path + "C:\Python27;C:\Python27\Scripts;C:\Python27\Lib","Process")
-
-    #after updating the path we need to let everyone know about it
-Set-ItemProperty -Path 'Registry::HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Environment' -Name PATH -Value $newPath -Force
-
-$HWND_BROADCAST = [IntPtr] 0xffff;
-$WM_SETTINGCHANGE = 0x1a;
-$result = [UIntPtr]::Zero
-
-if (-not ("Win32.NativeMethods" -as [Type]))
-{
-    # import sendmessagetimeout from win32
-    Add-Type -Namespace Win32 -Name NativeMethods -MemberDefinition @"
-    [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-    public static extern IntPtr SendMessageTimeout(
-    IntPtr hWnd, uint Msg, UIntPtr wParam, string lParam,
-    uint fuFlags, uint uTimeout, out UIntPtr lpdwResult);
-"@
+For($i = 0; $i -lt $dirsToAdd.Length; $i++){
+    Add-Directory-To-Path -Directory $dirsToAdd[$i]
 }
-# notify all windows of environment block change
-[Win32.Nativemethods]::SendMessageTimeout($HWND_BROADCAST, $WM_SETTINGCHANGE, [UIntPtr]::Zero, "Environment", 2, 5000, [ref] $result);
+
+Reset-Path
 
 ###### Python install extras for robot framework
 Write-Host "Installing Python Pip stuff"
+
 c:\python27\scripts\pip install decorator==4.0.10
 c:\python27\scripts\pip install docutils==0.12
 c:\python27\scripts\pip install pygments==2.0.2
