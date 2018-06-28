@@ -33,7 +33,7 @@ function Add-Directory-To-Path{
 
         $newPath = $currentPath + $Directory
 
-        Set-ItemProperty -Path 'Registry::HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Environment' -Name PATH –Value $newPath
+        Set-ItemProperty -Path 'Registry::HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Environment' -Name PATH -Value $newPath
         $env:Path = $newPath
 
     } else {
