@@ -120,3 +120,8 @@ Add-Firewall-Rule -DisplayName "LWM2M-UDP-DTLS" -Protocol "UDP" -Port "5684"
 Add-Firewall-Rule -DisplayName "LWM2M-TCP" -Protocol "TCP" -Port "5443"
 Add-Firewall-Rule -DisplayName "HealthCheck-TCP" -Protocol "TCP" -Port "8080"
 
+Add-Firewall-Rule -DisplayName "LWM2M-BootStrap-UDP" -Protocol "UDP" -Port "4683"
+Add-Firewall-Rule -DisplayName "LWM2M-BootStrap-UDP-DTLS" -Protocol "UDP" -Port "4684"
+Add-Firewall-Rule -DisplayName "LWM2M-BootStrap-TCP" -Protocol "TCP" -Port "4443"
+Add-Firewall-Rule -DisplayName "BootStrap-HealthCheck-TCP" -Protocol "TCP" -Port "8181"
+
