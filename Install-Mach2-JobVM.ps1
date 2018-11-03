@@ -33,7 +33,7 @@ function Add-Directory-To-Path{
 
         $newPath = $currentPath + $Directory
 
-        Set-ItemProperty -Path 'Registry::HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Environment' -Name PATH –Value $newPath
+        Set-ItemProperty -Path 'Registry::HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Environment' -Name PATH -Value $newPath
         $env:Path = $newPath
 
     } else {
@@ -126,4 +126,10 @@ c:\python27\scripts\pip install -U wxPython
 Add-Firewall-Rule -DisplayName "LWM2M-UDP" -Protocol "UDP" -Port "5683"
 Add-Firewall-Rule -DisplayName "LWM2M-UDP-DTLS" -Protocol "UDP" -Port "5684"
 Add-Firewall-Rule -DisplayName "LWM2M-TCP" -Protocol "TCP" -Port "5443"
+Add-Firewall-Rule -DisplayName "HealthCheck-TCP" -Protocol "TCP" -Port "8080"
+
+Add-Firewall-Rule -DisplayName "LWM2M-BootStrap-UDP" -Protocol "UDP" -Port "4683"
+Add-Firewall-Rule -DisplayName "LWM2M-BootStrap-UDP-DTLS" -Protocol "UDP" -Port "4684"
+Add-Firewall-Rule -DisplayName "LWM2M-BootStrap-TCP" -Protocol "TCP" -Port "4443"
+Add-Firewall-Rule -DisplayName "BootStrap-HealthCheck-TCP" -Protocol "TCP" -Port "8181"
 
