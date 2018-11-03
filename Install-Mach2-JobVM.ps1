@@ -71,6 +71,14 @@ $output = "c:\NDP46-KB3006563-x86-x64-AllOS-ENU.exe"
 Invoke-WebRequest -Uri $url -OutFile $output
 Start-Process -FilePath $output -ArgumentList "/q /norestart" -Wait -Verb RunAs
 
+### installing Microsoft Visual C++ 2015 Redistributable (x64)
+Write-Host "installing Microsoft Visual C++ 2015 Redistributable (x64)"
+$url = "https://download.microsoft.com/download/9/3/F/93FCF1E7-E6A4-478B-96E7-D4B285925B00/vc_redist.x64.exe"
+$output = "c:\vc_redist.x64.exe"
+
+Invoke-WebRequest -Uri $url -OutFile $output
+Start-Process -FilePath $output -ArgumentList "/q /norestart" -Wait -Verb RunAs
+
 ### Node Install
 Write-Host "Installing Node"
 
