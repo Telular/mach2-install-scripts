@@ -33,7 +33,7 @@ function Add-Directory-To-Path{
 
         $newPath = $currentPath + $Directory
 
-        Set-ItemProperty -Path 'Registry::HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Environment' -Name PATH -Value $newPath
+        Set-ItemProperty -Path 'Registry::HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Environment' -Name PATH –Value $newPath
         $env:Path = $newPath
 
     } else {
@@ -71,10 +71,22 @@ $output = "c:\NDP46-KB3006563-x86-x64-AllOS-ENU.exe"
 Invoke-WebRequest -Uri $url -OutFile $output
 Start-Process -FilePath $output -ArgumentList "/q /norestart" -Wait -Verb RunAs
 
+
+## http://download.microsoft.com/download/1/6/B/16B06F60-3B20-4FF2-B699-5E9B7962F9AE/VSU3/vcredist_x64.exe
+
+### installing Microsoft Visual C++ 2015 Redistributable (x64)
+Write-Host "installing Microsoft Visual C++ 2012 Redistributable (x64)"
+$url = "http://download.microsoft.com/download/1/6/B/16B06F60-3B20-4FF2-B699-5E9B7962F9AE/VSU3/vcredist_x64.exe"
+$output = "c:\vc_redist.2012.x64.exe"
+
+Invoke-WebRequest -Uri $url -OutFile $output
+Start-Process -FilePath $output -ArgumentList "/q /norestart" -Wait -Verb RunAs
+
+
 ### installing Microsoft Visual C++ 2015 Redistributable (x64)
 Write-Host "installing Microsoft Visual C++ 2015 Redistributable (x64)"
 $url = "https://download.microsoft.com/download/9/3/F/93FCF1E7-E6A4-478B-96E7-D4B285925B00/vc_redist.x64.exe"
-$output = "c:\vc_redist.x64.exe"
+$output = "c:\vc_redist.2015.x64.exe"
 
 Invoke-WebRequest -Uri $url -OutFile $output
 Start-Process -FilePath $output -ArgumentList "/q /norestart" -Wait -Verb RunAs
@@ -126,10 +138,4 @@ c:\python27\scripts\pip install -U wxPython
 Add-Firewall-Rule -DisplayName "LWM2M-UDP" -Protocol "UDP" -Port "5683"
 Add-Firewall-Rule -DisplayName "LWM2M-UDP-DTLS" -Protocol "UDP" -Port "5684"
 Add-Firewall-Rule -DisplayName "LWM2M-TCP" -Protocol "TCP" -Port "5443"
-Add-Firewall-Rule -DisplayName "HealthCheck-TCP" -Protocol "TCP" -Port "8080"
-
-Add-Firewall-Rule -DisplayName "LWM2M-BootStrap-UDP" -Protocol "UDP" -Port "4683"
-Add-Firewall-Rule -DisplayName "LWM2M-BootStrap-UDP-DTLS" -Protocol "UDP" -Port "4684"
-Add-Firewall-Rule -DisplayName "LWM2M-BootStrap-TCP" -Protocol "TCP" -Port "4443"
-Add-Firewall-Rule -DisplayName "BootStrap-HealthCheck-TCP" -Protocol "TCP" -Port "8181"
 
