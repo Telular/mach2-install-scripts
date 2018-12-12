@@ -33,7 +33,7 @@ function Add-Directory-To-Path{
 
         $newPath = $currentPath + $Directory
 
-        Set-ItemProperty -Path 'Registry::HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Environment' -Name PATH –Value $newPath
+        Set-ItemProperty -Path 'Registry::HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Environment' -Name PATH â€“Value $newPath
         $env:Path = $newPath
 
     } else {
@@ -62,6 +62,8 @@ function Reset-Path{
 }
 
 ############# END FUNCTIONS ###################
+
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
 Write-Host "Installing .net 4.6"
 ### Install .net 4.6
@@ -120,6 +122,9 @@ Reset-Path
 
 ###### Python install extras for robot framework
 Write-Host "Installing Python Pip stuff"
+
+### upgrade pip
+python -m pip install --upgrade pip
 
 c:\python27\scripts\pip install decorator==4.0.10
 c:\python27\scripts\pip install docutils==0.12
